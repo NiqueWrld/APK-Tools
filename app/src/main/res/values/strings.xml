@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name">APK Analyser</string>
+    <string name="decompile">Decompile</string>
+    <string name="redecompile">Redecompile</string>
+    <string name="browse">Browse</string>
+    <string name="export_zip">Export ZIP</string>
+    <string name="cancel">Cancel</string>
+    <string name="decompiling">Decompiling…</string>
+    <string name="exporting">Exporting ZIP…</string>
+    <string name="no_apps">No apps found</string>
+    <string name="search_apps">Search apps…</string>
+    <string name="disclaimer_title">Educational Use Only</string>
+    <string name="disclaimer_message">Only analyze apps you own or have permission to inspect. This tool is for educational purposes only.</string>
+    <string name="accept">I Understand</string>
+    <string name="error_decompile">Failed to decompile APK</string>
+    <string name="error_too_large">APK too large (max 100MB)</string>
+    <string name="success_decompile">Decompilation complete</string>
+    <string name="success_export">ZIP exported successfully</string>
+    <string name="error_export">Failed to export ZIP</string>
+</resources>
