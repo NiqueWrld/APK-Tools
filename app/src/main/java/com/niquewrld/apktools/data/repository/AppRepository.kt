@@ -1,10 +1,10 @@
-package com.apkanalyser.data.repository
+package com.niquewrld.apktools.data.repository
 
 import android.content.Context
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.os.Build
-import com.apkanalyser.data.model.AppInfo
+import com.niquewrld.apktools.data.model.AppInfo
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File

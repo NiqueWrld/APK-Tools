@@ -1,4 +1,4 @@
-package com.apkanalyser.ui
+package com.niquewrld.apktools.ui
 
 import android.Manifest
 import android.app.AlertDialog
@@ -16,14 +16,15 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.widget.doAfterTextChanged
 import androidx.lifecycle.lifecycleScope
-import androidx.recyclerview.widget.LinearLayoutManager
-import com.apkanalyser.R
-import com.apkanalyser.data.model.AppInfo
-import com.apkanalyser.databinding.ActivityMainBinding
-import com.apkanalyser.databinding.DialogProgressBinding
-import com.apkanalyser.ui.applist.AppListAdapter
-import com.apkanalyser.ui.applist.AppListViewModel
-import com.apkanalyser.ui.browser.FileBrowserActivity
+import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import com.niquewrld.apktools.R
+import com.niquewrld.apktools.data.model.AppInfo
+import com.niquewrld.apktools.databinding.ActivityMainBinding
+import com.niquewrld.apktools.databinding.DialogProgressBinding
+import com.niquewrld.apktools.ui.applist.AppListAdapter
+import com.niquewrld.apktools.ui.applist.AppListViewModel
+import com.niquewrld.apktools.ui.browser.FileBrowserActivity
+import com.niquewrld.apktools.ui.detail.AppDetailActivity
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -37,6 +38,7 @@ class MainActivity : AppCompatActivity() {
     private var decompileJob: Job? = null
     private var progressDialog: AlertDialog? = null
     private var pendingExportApp: AppInfo? = null
+    private var pendingExtractApp: AppInfo? = null
     
     private val storagePermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -78,13 +80,10 @@ class MainActivity : AppCompatActivity() {
     
     private fun setupRecyclerView() {
         adapter = AppListAdapter(
-            onDecompileClick = { app -> startDecompilation(app) },
-            onBrowseClick = { app -> openFileBrowser(app) },
-            onRedecompileClick = { app -> startDecompilation(app) },
-            onExportClick = { app -> requestExport(app) }
+            onItemClick = { app -> openAppDetail(app) }
         )
         
-        binding.appList.layoutManager = LinearLayoutManager(this)
+        binding.appList.layoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
         binding.appList.adapter = adapter
     }
     
@@ -132,15 +131,15 @@ class MainActivity : AppCompatActivity() {
         decompileJob = lifecycleScope.launch {
             viewModel.decompile(this@MainActivity, app).collectLatest { state ->
                 when (state) {
-                    is com.apkanalyser.domain.DecompileState.Starting -> {
+                    is com.niquewrld.apktools.domain.DecompileState.Starting -> {
                         dialogBinding.progressText.text = "Starting..."
                         dialogBinding.progressBar.progress = 0
                     }
-                    is com.apkanalyser.domain.DecompileState.Progress -> {
+                    is com.niquewrld.apktools.domain.DecompileState.Progress -> {
                         dialogBinding.progressText.text = state.progress.currentFile
                         dialogBinding.progressBar.progress = state.progress.percentage
                     }
-                    is com.apkanalyser.domain.DecompileState.Finished -> {
+                    is com.niquewrld.apktools.domain.DecompileState.Finished -> {
                         progressDialog?.dismiss()
                         handleDecompileResult(state.result, app)
                     }
@@ -150,22 +149,34 @@ class MainActivity : AppCompatActivity() {
     }
     
     private fun handleDecompileResult(
-        result: com.apkanalyser.data.model.DecompileResult,
+        result: com.niquewrld.apktools.data.model.DecompileResult,
         app: AppInfo
     ) {
         when (result) {
-            is com.apkanalyser.data.model.DecompileResult.Success -> {
+            is com.niquewrld.apktools.data.model.DecompileResult.Success -> {
                 Toast.makeText(this, R.string.success_decompile, Toast.LENGTH_SHORT).show()
                 viewModel.refreshDecompiledStatus(this)
                 openFileBrowser(app)
             }
-            is com.apkanalyser.data.model.DecompileResult.Error -> {
+            is com.niquewrld.apktools.data.model.DecompileResult.Error -> {
                 Toast.makeText(this, result.message, Toast.LENGTH_LONG).show()
             }
-            is com.apkanalyser.data.model.DecompileResult.Cancelled -> {
+            is com.niquewrld.apktools.data.model.DecompileResult.Cancelled -> {
                 // User cancelled, do nothing
             }
         }
+    }
+    
+    private fun openAppDetail(app: AppInfo) {
+        val intent = Intent(this, AppDetailActivity::class.java).apply {
+            putExtra(AppDetailActivity.EXTRA_PACKAGE_NAME, app.packageName)
+            putExtra(AppDetailActivity.EXTRA_APP_NAME, app.appName)
+            putExtra(AppDetailActivity.EXTRA_VERSION_NAME, app.versionName)
+            putExtra(AppDetailActivity.EXTRA_VERSION_CODE, app.versionCode)
+            putExtra(AppDetailActivity.EXTRA_APK_PATH, app.apkPath)
+            putExtra(AppDetailActivity.EXTRA_APK_SIZE, app.apkSize)
+        }
+        startActivity(intent)
     }
     
     private fun openFileBrowser(app: AppInfo) {
@@ -221,14 +232,62 @@ class MainActivity : AppCompatActivity() {
         }
     }
     
+    private fun requestExtractApk(app: AppInfo) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            if (Environment.isExternalStorageManager()) {
+                extractApk(app)
+            } else {
+                AlertDialog.Builder(this)
+                    .setTitle("Storage Permission")
+                    .setMessage("To extract APK files, please grant storage access in settings.")
+                    .setPositiveButton("Open Settings") { _, _ ->
+                        pendingExtractApp = app
+                        val intent = Intent(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION)
+                        startActivity(intent)
+                    }
+                    .setNegativeButton("Cancel", null)
+                    .show()
+            }
+        } else {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) 
+                == PackageManager.PERMISSION_GRANTED) {
+                extractApk(app)
+            } else {
+                pendingExtractApp = app
+                storagePermissionLauncher.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+            }
+        }
+    }
+    
+    private fun extractApk(app: AppInfo) {
+        lifecycleScope.launch {
+            Toast.makeText(this@MainActivity, R.string.extracting_apk, Toast.LENGTH_SHORT).show()
+            val apkPath = viewModel.extractApk(this@MainActivity, app)
+            if (apkPath != null) {
+                Toast.makeText(
+                    this@MainActivity, 
+                    "APK extracted to: $apkPath", 
+                    Toast.LENGTH_LONG
+                ).show()
+            } else {
+                Toast.makeText(this@MainActivity, R.string.error_extract, Toast.LENGTH_LONG).show()
+            }
+        }
+    }
+    
     override fun onResume() {
         super.onResume()
         // Check if permission was granted in settings
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && 
-            Environment.isExternalStorageManager() && 
-            pendingExportApp != null) {
-            exportToZip(pendingExportApp!!)
-            pendingExportApp = null
+            Environment.isExternalStorageManager()) {
+            if (pendingExportApp != null) {
+                exportToZip(pendingExportApp!!)
+                pendingExportApp = null
+            }
+            if (pendingExtractApp != null) {
+                extractApk(pendingExtractApp!!)
+                pendingExtractApp = null
+            }
         }
     }
     

@@ -1,10 +1,10 @@
-package com.apkanalyser.ui.viewer
+package com.niquewrld.apktools.ui.viewer
 
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
-import com.apkanalyser.databinding.ActivityCodeViewerBinding
+import com.niquewrld.apktools.databinding.ActivityCodeViewerBinding
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 

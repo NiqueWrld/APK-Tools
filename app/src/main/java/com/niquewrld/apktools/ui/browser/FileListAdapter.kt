@@ -1,13 +1,13 @@
-package com.apkanalyser.ui.browser
+package com.niquewrld.apktools.ui.browser
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.apkanalyser.R
-import com.apkanalyser.data.model.FileItem
-import com.apkanalyser.databinding.ItemFileBinding
+import com.niquewrld.apktools.R
+import com.niquewrld.apktools.data.model.FileItem
+import com.niquewrld.apktools.databinding.ItemFileBinding
 
 class FileListAdapter(
     private val onItemClick: (FileItem) -> Unit

@@ -14,5 +14,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "APKAnalyser"
+rootProject.name = "APKTools"
 include(":app")

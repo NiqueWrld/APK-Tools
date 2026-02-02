@@ -1,4 +1,4 @@
-# APK Analyser
+# APK Tools
 
 An educational Android app that extracts and decompiles APK files into Smali code for analysis.
 
@@ -8,7 +8,11 @@ An educational Android app that extracts and decompiles APK files into Smali cod
 - 🔍 **Search Apps** - Filter apps by name or package
 - ⚙️ **Decompile to Smali** - Extract and decompile DEX files using baksmali/dexlib2
 - 📁 **File Browser** - Navigate decompiled Smali files in a folder structure
+- 🔎 **Search Files** - Search recursively through decompiled files
 - 📄 **Code Viewer** - Read-only monospace viewer for Smali code
+- 🖼️ **Media Viewer** - Preview images, videos, and audio from APKs
+- 📦 **Export ZIP** - Export decompiled files as ZIP to Downloads/APKTools
+- 📲 **Extract APK** - Extract original APK to Downloads/APKTools
 
 ## Requirements
 
@@ -20,7 +24,7 @@ An educational Android app that extracts and decompiles APK files into Smali cod
 
 ```bash
 # Clone or download the project
-cd "APK Editor"
+cd "APK-Tools"
 
 # Build debug APK
 ./gradlew assembleDebug
@@ -39,15 +43,17 @@ The debug APK will be at: `app/build/outputs/apk/debug/app-debug.apk`
 ```
 app/
 ├── src/main/
-│   ├── java/com/apkanalyser/
+│   ├── java/com/niquewrld/apktools/
 │   │   ├── data/
 │   │   │   ├── model/       # AppInfo, FileItem, DecompileResult
 │   │   │   └── repository/  # AppRepository, FileRepository
 │   │   ├── domain/          # SmaliDecompiler engine
 │   │   └── ui/
-│   │       ├── applist/     # Main screen with app list
+│   │       ├── applist/     # Main screen with app grid
+│   │       ├── detail/      # App detail page
 │   │       ├── browser/     # Smali file browser
-│   │       └── viewer/      # Code viewer
+│   │       ├── viewer/      # Code viewer
+│   │       └── media/       # Media viewer
 │   └── res/
 │       └── layout/          # XML layouts
 ├── build.gradle.kts
@@ -60,6 +66,7 @@ app/
 2. **DEX Extraction** - Opens APK as ZIP, extracts all `classes*.dex` files
 3. **Decompilation** - Uses `dexlib2` to parse DEX and `baksmali` to generate Smali
 4. **Storage** - All output stored in app-private storage (`filesDir`)
+5. **Exports** - APKs and ZIPs exported to `Downloads/APKTools`
 
 ## Limitations
 
@@ -86,6 +93,7 @@ This app is designed for:
 - **dexlib2** (2.5.2) - DEX file parsing
 - **baksmali** (2.5.2) - Smali code generation
 - **AndroidX** - UI components
+- **Material 3** - Modern UI design
 - **Coroutines** - Background processing with cancellation support
 
 ## License

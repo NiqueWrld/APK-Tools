@@ -1,10 +1,10 @@
-package com.apkanalyser.domain
+package com.niquewrld.apktools.domain
 
 import android.content.Context
-import com.apkanalyser.data.model.AppInfo
-import com.apkanalyser.data.model.DecompileProgress
-import com.apkanalyser.data.model.DecompileResult
-import com.apkanalyser.data.repository.FileRepository
+import com.niquewrld.apktools.data.model.AppInfo
+import com.niquewrld.apktools.data.model.DecompileProgress
+import com.niquewrld.apktools.data.model.DecompileResult
+import com.niquewrld.apktools.data.repository.FileRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.Flow
@@ -148,7 +148,10 @@ class SmaliDecompiler(
             zip.entries().asSequence()
                 .filter { it.name.endsWith(".dex") }
                 .forEach { entry ->
-                    val dexFile = File(tempDir, entry.name)
+                    // Use only the filename, not the full path from the ZIP
+                    val fileName = File(entry.name).name
+                    val dexFile = File(tempDir, fileName)
+                    dexFile.parentFile?.mkdirs()
                     zip.getInputStream(entry).use { input ->
                         dexFile.outputStream().use { output ->
                             input.copyTo(output)

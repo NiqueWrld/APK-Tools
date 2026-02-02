@@ -1,27 +1,29 @@
-package com.apkanalyser.ui.applist
+package com.niquewrld.apktools.ui.applist
 
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.apkanalyser.R
-import com.apkanalyser.data.model.AppInfo
-import com.apkanalyser.databinding.ItemAppBinding
+import com.niquewrld.apktools.R
+import com.niquewrld.apktools.data.model.AppInfo
+import com.niquewrld.apktools.databinding.ItemAppBinding
 
 class AppListAdapter(
-    private val onDecompileClick: (AppInfo) -> Unit,
-    private val onBrowseClick: (AppInfo) -> Unit,
-    private val onRedecompileClick: (AppInfo) -> Unit = {},
-    private val onExportClick: (AppInfo) -> Unit = {}
+    private val onItemClick: (AppInfo) -> Unit
 ) : ListAdapter<AppInfo, AppListAdapter.AppViewHolder>(AppDiffCallback()) {
     
     private var decompiledPackages: Set<String> = emptySet()
     
     fun submitList(apps: List<AppInfo>, decompiled: Set<String>) {
         decompiledPackages = decompiled
-        submitList(apps)
+        // Submit a copy of the list to force DiffUtil to run
+        super.submitList(apps.toList()) {
+            // After list is submitted, notify all items to rebind with new decompiled status
+            notifyItemRangeChanged(0, itemCount)
+        }
     }
     
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AppViewHolder {
@@ -43,6 +45,9 @@ class AppListAdapter(
         
         fun bind(app: AppInfo) {
             binding.apply {
+                // Card click to open detail page
+                root.setOnClickListener { onItemClick(app) }
+                
                 appName.text = app.appName
                 packageName.text = app.packageName
                 appSize.text = "v${app.versionName} • ${String.format("%.1f", app.apkSizeMB)} MB"
@@ -50,31 +55,14 @@ class AppListAdapter(
                 app.icon?.let { appIcon.setImageDrawable(it) }
                     ?: appIcon.setImageResource(R.mipmap.ic_launcher)
                 
+                // Show checkmark if decompiled
                 val isDecompiled = decompiledPackages.contains(app.packageName)
-                
+                decompiledIcon.visibility = if (isDecompiled) View.VISIBLE else View.GONE
                 if (isDecompiled) {
-                    // Show Browse/Export buttons and Redecompile
-                    decompileButton.visibility = View.GONE
-                    redecompileButton.visibility = View.VISIBLE
-                    actionButtonsLayout.visibility = View.VISIBLE
-                    
-                    redecompileButton.setOnClickListener { onRedecompileClick(app) }
-                    browseButton.setOnClickListener { onBrowseClick(app) }
-                    exportButton.setOnClickListener { onExportClick(app) }
-                } else {
-                    // Show only Decompile button
-                    decompileButton.visibility = View.VISIBLE
-                    redecompileButton.visibility = View.GONE
-                    actionButtonsLayout.visibility = View.GONE
-                    
-                    decompileButton.setOnClickListener { onDecompileClick(app) }
+                    decompiledIcon.setColorFilter(
+                        ContextCompat.getColor(root.context, android.R.color.holo_green_dark)
+                    )
                 }
-                
-                // Enable/disable based on size limit
-                decompileButton.isEnabled = app.isDecompilable
-                decompileButton.alpha = if (app.isDecompilable) 1f else 0.5f
-                redecompileButton.isEnabled = app.isDecompilable
-                redecompileButton.alpha = if (app.isDecompilable) 1f else 0.5f
             }
         }
     }

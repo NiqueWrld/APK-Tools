@@ -29,6 +29,31 @@
         android:orientation="vertical"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
+        <!-- Search Bar -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            app:cardCornerRadius="8dp"
+            app:cardElevation="2dp">
+
+            <EditText
+                android:id="@+id/searchInput"
+                android:layout_width="match_parent"
+                android:layout_height="44dp"
+                android:background="@android:color/transparent"
+                android:drawableStart="@android:drawable/ic_menu_search"
+                android:drawablePadding="8dp"
+                android:hint="@string/search_files"
+                android:imeOptions="actionSearch"
+                android:inputType="text"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
+                android:singleLine="true"
+                android:textSize="14sp" />
+
+        </com.google.android.material.card.MaterialCardView>
+
         <TextView
             android:id="@+id/currentPath"
             android:layout_width="match_parent"
@@ -39,7 +64,20 @@
             android:fontFamily="monospace"
             android:singleLine="true"
             android:ellipsize="start"
-            tools:text="/data/user/0/com.apkanalyser/files/decompiled/com.example" />
+            tools:text="/data/user/0/com.niquewrld.apktools/files/decompiled/com.example" />
+
+        <!-- Search results count -->
+        <TextView
+            android:id="@+id/searchResultsCount"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/primary"
+            android:padding="8dp"
+            android:textColor="@android:color/white"
+            android:textSize="12sp"
+            android:visibility="gone"
+            tools:text="Found 15 files"
+            tools:visibility="visible" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/fileList"

@@ -1,8 +1,8 @@
-package com.apkanalyser
+package com.niquewrld.apktools
 
 import android.app.Application
 
-class APKAnalyserApp : Application() {
+class APKToolsApp : Application() {
     
     override fun onCreate() {
         super.onCreate()
@@ -10,7 +10,7 @@ class APKAnalyserApp : Application() {
     }
     
     companion object {
-        lateinit var instance: APKAnalyserApp
+        lateinit var instance: APKToolsApp
             private set
     }
 }

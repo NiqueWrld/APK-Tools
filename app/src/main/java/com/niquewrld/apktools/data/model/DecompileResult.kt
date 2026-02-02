@@ -1,4 +1,4 @@
-package com.apkanalyser.data.model
+package com.niquewrld.apktools.data.model
 
 /**
  * Represents the result of a decompilation operation

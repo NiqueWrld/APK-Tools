@@ -1,4 +1,4 @@
-package com.apkanalyser.domain
+package com.niquewrld.apktools.domain
 
 import java.io.ByteArrayInputStream
 import java.io.InputStream

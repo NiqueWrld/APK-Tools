@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">APK Analyser</string>
+    <string name="app_name">APK Tools</string>
     <string name="decompile">Decompile</string>
     <string name="redecompile">Redecompile</string>
     <string name="browse">Browse</string>
@@ -17,4 +17,13 @@
     <string name="success_decompile">Decompilation complete</string>
     <string name="success_export">ZIP exported successfully</string>
     <string name="error_export">Failed to export ZIP</string>
+    <string name="extract_apk">Extract APK</string>
+    <string name="extracting_apk">Extracting APK…</string>
+    <string name="success_extract">APK extracted successfully</string>
+    <string name="error_extract">Failed to extract APK</string>
+    <string name="show_apk_in_folder">Show APK in Folder</string>
+    <string name="show_zip_in_folder">Show ZIP in Folder</string>
+    <string name="close">Close</string>
+    <string name="view_permissions">View All</string>
+    <string name="search_files">Search files…</string>
 </resources>

@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "com.apkanalyser"
+    namespace = "com.niquewrld.apktools"
     compileSdk = 34
 
     signingConfigs {
@@ -17,7 +17,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.apkanalyser"
+        applicationId = "com.niquewrld.apktools"
         minSdk = 26
         targetSdk = 34
         versionCode = 1

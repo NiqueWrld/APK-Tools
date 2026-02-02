@@ -1,8 +1,8 @@
-package com.apkanalyser.data.repository
+package com.niquewrld.apktools.data.repository
 
 import android.content.Context
 import android.os.Environment
-import com.apkanalyser.data.model.FileItem
+import com.niquewrld.apktools.data.model.FileItem
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File
@@ -85,7 +85,7 @@ class FileRepository(private val context: Context) {
      */
     fun getExportsDir(): File {
         val downloadsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-        return File(downloadsDir, "APKAnalyser").apply {
+        return File(downloadsDir, "APKTools").apply {
             if (!exists()) mkdirs()
         }
     }
@@ -101,8 +101,8 @@ class FileRepository(private val context: Context) {
         }
         
         val exportsDir = getExportsDir()
-        val sanitizedName = appName.replace(Regex("[^a-zA-Z0-9._-]"), "_")
-        val zipFile = File(exportsDir, "${sanitizedName}_decompiled.zip")
+        // Use packageName for ZIP filename to ensure uniqueness
+        val zipFile = File(exportsDir, "${packageName}_decompiled.zip")
         
         // Delete existing file if present
         if (zipFile.exists()) {
@@ -128,6 +128,49 @@ class FileRepository(private val context: Context) {
             e.printStackTrace()
             null
         }
+    }
+    
+    /**
+     * Extract/copy APK file to Downloads folder
+     * Returns the path to the extracted APK or null if failed
+     */
+    suspend fun extractApk(packageName: String, apkPath: String): String? = withContext(Dispatchers.IO) {
+        val exportsDir = getExportsDir()
+        val sourceFile = File(apkPath)
+        
+        if (!sourceFile.exists()) {
+            return@withContext null
+        }
+        
+        val destFile = File(exportsDir, "${packageName}.apk")
+        
+        try {
+            sourceFile.inputStream().use { input ->
+                destFile.outputStream().use { output ->
+                    input.copyTo(output)
+                }
+            }
+            destFile.absolutePath
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        }
+    }
+    
+    /**
+     * Check if extracted APK exists in Downloads
+     */
+    fun getExtractedApkFile(packageName: String): File? {
+        val apkFile = File(getExportsDir(), "${packageName}.apk")
+        return if (apkFile.exists()) apkFile else null
+    }
+    
+    /**
+     * Check if exported ZIP exists in Downloads
+     */
+    fun getExportedZipFile(packageName: String): File? {
+        val zipFile = File(getExportsDir(), "${packageName}_decompiled.zip")
+        return if (zipFile.exists()) zipFile else null
     }
     
     companion object {

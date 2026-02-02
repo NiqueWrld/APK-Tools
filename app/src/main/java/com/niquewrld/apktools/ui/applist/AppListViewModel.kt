@@ -1,13 +1,13 @@
-package com.apkanalyser.ui.applist
+package com.niquewrld.apktools.ui.applist
 
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.apkanalyser.data.model.AppInfo
-import com.apkanalyser.data.repository.AppRepository
-import com.apkanalyser.data.repository.FileRepository
-import com.apkanalyser.domain.DecompileState
-import com.apkanalyser.domain.SmaliDecompiler
+import com.niquewrld.apktools.data.model.AppInfo
+import com.niquewrld.apktools.data.repository.AppRepository
+import com.niquewrld.apktools.data.repository.FileRepository
+import com.niquewrld.apktools.domain.DecompileState
+import com.niquewrld.apktools.domain.SmaliDecompiler
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -76,6 +76,11 @@ class AppListViewModel : ViewModel() {
     suspend fun exportToZip(context: Context, appInfo: AppInfo): String? {
         initRepositories(context)
         return fileRepository?.exportToZip(appInfo.packageName, appInfo.appName)
+    }
+    
+    suspend fun extractApk(context: Context, appInfo: AppInfo): String? {
+        initRepositories(context)
+        return fileRepository?.extractApk(appInfo.packageName, appInfo.apkPath)
     }
     
     private fun initRepositories(context: Context) {

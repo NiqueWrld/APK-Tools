@@ -1,4 +1,4 @@
-package com.apkanalyser.ui.viewer
+package com.niquewrld.apktools.ui.viewer
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

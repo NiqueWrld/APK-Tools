@@ -15,14 +15,14 @@
         tools:ignore="ScopedStorage" />
 
     <application
-        android:name=".APKAnalyserApp"
+        android:name=".APKToolsApp"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:requestLegacyExternalStorage="true"
-        android:theme="@style/Theme.APKAnalyser">
+        android:theme="@style/Theme.APKTools">
 
         <activity
             android:name=".ui.MainActivity"
@@ -34,6 +34,11 @@
         </activity>
 
         <activity
+            android:name=".ui.detail.AppDetailActivity"
+            android:exported="false"
+            android:parentActivityName=".ui.MainActivity" />
+
+        <activity
             android:name=".ui.browser.FileBrowserActivity"
             android:exported="false"
             android:parentActivityName=".ui.MainActivity" />
@@ -42,6 +47,12 @@
             android:name=".ui.viewer.CodeViewerActivity"
             android:exported="false"
             android:parentActivityName=".ui.browser.FileBrowserActivity" />
+
+        <activity
+            android:name=".ui.viewer.MediaViewerActivity"
+            android:exported="false"
+            android:parentActivityName=".ui.browser.FileBrowserActivity"
+            android:configChanges="orientation|screenSize" />
 
     </application>
 
